@@ -5,38 +5,37 @@ import * as Contacts from "expo-contacts";
 
 export default function App() {
   const [contact, setContact] = useState([]);
-  // console.log(contact);
 
   const getContacts = async () => {
     const { status } = await Contacts.requestPermissionsAsync();
     if (status === "granted") {
       const { data } = await Contacts.getContactsAsync({
         fields: [Contacts.Fields.PhoneNumbers],
-        pageSize: 10,
+        // pageSize: 10,
       });
       if (data.length > 0) {
-        console.log(data);
+        // console.log(data);
         setContact(data);
-        // console.log(data[0]);
-        // setContact(data[0]);
       }
     }
   };
 
   return (
     <View style={styles.container}>
+      <Button title="Get Contacts" onPress={getContacts} />
       <FlatList
         data={contact}
-        renderItem={({ item }) => (
-          <Text>
-            {item.name} {[item.phoneNumbers[0].number]}
-          </Text>
-        )}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => {
+          const { name, phoneNumbers } = item;
+          return (
+            <Text>{`${name} ${
+              phoneNumbers ? phoneNumbers[0].number : "(no phonenumber)"
+            }`}</Text>
+          );
+        }}
+        ListEmptyComponent={<Text>Get some contacts!</Text>}
       />
-      {/* <Text>
-        {contact.name} {[contact.phoneNumbers[0].number]}
-      </Text> */}
-      <Button title="Get Contacts" onPress={getContacts} />
     </View>
   );
 }
